@@ -7,6 +7,7 @@
 // the Business Source License, use of this software will be governed
 // by the Apache License, Version 2.0.
 
+use std::collections::HashMap;
 use std::error::Error;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
@@ -42,6 +43,9 @@ pub struct PostgresSourceReader {
     connector: PostgresSourceConnector,
     /// Our cursor into the WAL
     lsn: PgLsn,
+    /// Relation id to name map, used to enrich error messages
+    /// Also lets us ignore replication messages that are provably irrelevant
+    rel_id_map: HashMap<u32,String>
 }
 
 trait ErrorExt {
@@ -122,6 +126,7 @@ impl PostgresSourceReader {
             source_name,
             connector,
             lsn: 0.into(),
+            rel_id_map: HashMap::new(),
         }
     }
 
@@ -207,6 +212,7 @@ impl PostgresSourceReader {
                     try_fatal!(buffer.write(&try_fatal!(bincode::serialize(&mz_row))).await);
                 }
             }
+            self.rel_id_map.insert(info.rel_id, info.name);
         }
         client.simple_query("COMMIT;").await?;
         Ok(())
@@ -379,8 +385,27 @@ impl PostgresSourceReader {
                                 try_fatal!(tx.insert(row).await);
                             }
                         }
-                        Origin(_) | Relation(_) | Type(_) => (),
-                        Truncate(_) => return Err(Fatal(anyhow!("source table got truncated"))),
+                        // Relation messages are sent when the schema of a relation in the publication changes
+                        // which can include new tables being added to the publication
+                        Relation(relation) => {
+                            match self.rel_id_map.get(&relation.rel_id()) {
+                                Some(name) => return Err(Fatal(anyhow!("source table {} was altered", name))),
+                                // Ignore tables we don't know about
+                                _ => (),
+                            }
+                            
+                        },
+                        Origin(_) | Type(_) => (),
+                        Truncate(truncate) => {
+                            for rel_id in truncate.rel_ids() {
+                                match self.rel_id_map.get(rel_id) {
+                                    Some(name) => return Err(Fatal(anyhow!("source table {} got truncated", name))),
+                                    // Ignore tables we don't know about
+                                    _ => (),
+                                }
+                            }
+                            
+                        },
                         // The enum is marked as non_exaustive. Better to be conservative here in
                         // case a new message is relevant to the semantics of our source
                         _ => return Err(Fatal(anyhow!("unexpected logical replication message"))),
