@@ -60,18 +60,18 @@ num_cpus = "1.13.1"
 openssl = { version = "0.10.38", features = ["vendored"] }
 openssl-sys = { version = "0.9.72", features = ["vendored"] }
 ore = { path = "../ore" }
-os_info = "3.0.9"
+os_info = "3.1.0"
 pid-file = { path = "../pid-file" }
 pgwire = { path = "../pgwire" }
 prof = { path = "../prof" }
 prometheus = { git = "https://github.com/MaterializeInc/rust-prometheus.git", default-features = false }
 rdkafka-sys = { git = "https://github.com/fede1024/rust-rdkafka.git", features = ["cmake-build", "libz-static"] }
 repr = { path = "../repr" }
-reqwest = { version = "0.11.8", features = ["json"] }
+reqwest = { version = "0.11.9", features = ["json"] }
 rlimit = "0.6.2"
 semver = "1.0.4"
 serde = { version = "1.0.133", features = ["derive"] }
-serde_json = "1.0.74"
+serde_json = "1.0.75"
 shell-words = "1.0.0"
 sql = { path = "../sql" }
 sysctl = "0.4.3"
@@ -82,7 +82,7 @@ tokio = { version = "1.15.0", features = ["sync"] }
 tokio-openssl = "0.6.3"
 tokio-stream = { version = "0.1.8", features = ["net"] }
 tracing = "0.1.29"
-tracing-subscriber = "0.3.5"
+tracing-subscriber = "0.3.6"
 url = "2.2.2"
 uuid = "0.8.2"
 
@@ -112,8 +112,8 @@ postgres_array = { git = "https://github.com/MaterializeInc/rust-postgres-array"
 predicates = "2.1.0"
 rand = "0.8.4"
 repr = { path = "../repr" }
-reqwest = { version = "0.11.8", features = ["blocking"] }
-serde_json = "1.0.74"
+reqwest = { version = "0.11.9", features = ["blocking"] }
+serde_json = "1.0.75"
 tokio-postgres = { git = "https://github.com/MaterializeInc/rust-postgres", branch = "mz-0.7.2", features = ["with-chrono-0_4"] }
 
 [build-dependencies]
@@ -123,7 +123,7 @@ cc = "1.0.72"
 flate2 = "1.0.22"
 hex = "0.4.3"
 hex-literal = "0.3.4"
-reqwest = { version = "0.11.8", features = ["blocking"] }
+reqwest = { version = "0.11.9", features = ["blocking"] }
 sha2 = "0.10.1"
 tar = "0.4.38"
 walkdir = "2.3.2"
