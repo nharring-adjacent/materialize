@@ -4,60 +4,66 @@ description = "Integration test driver for Materialize."
 version = "0.0.0"
 edition = "2021"
 publish = false
+rust-version = "1.58.0"
 
 [dependencies]
-async-compression = { version = "0.3.8", features = ["tokio", "gzip"] }
+anyhow = "1.0.53"
+async-compression = { version = "0.3.12", features = ["tokio", "gzip"] }
 async-trait = "0.1.52"
-aws-config = { version = "0.4.1", default-features = false, features = ["native-tls"] }
-aws-sdk-kinesis = { version = "0.4.0", default-features = false }
-aws-sdk-s3 = { version = "0.4.0", default-features = false }
-aws-sdk-sqs = { version = "0.4.1", default-features = false }
-aws-smithy-http = "0.34.0"
-aws-types = { version = "0.4.0", features = ["hardcoded-credentials"] }
+aws-config = { version = "0.5.0", default-features = false, features = ["native-tls"] }
+aws-sdk-kinesis = { version = "0.5.0", default-features = false }
+aws-sdk-s3 = { version = "0.5.0", default-features = false }
+aws-sdk-sqs = { version = "0.5.0", default-features = false }
+aws-smithy-http = "0.35.1"
+aws-types = { version = "0.5.0", features = ["hardcoded-credentials"] }
 atty = "0.2.0"
 byteorder = "1.4.3"
 bytes = "1.1.0"
 ccsr = { path = "../ccsr" }
 chrono = { version = "0.4.0", default-features = false, features = ["std"] }
-clap = { version = "3.0.6", features = ["derive"] }
+clap = { version = "3.0.12", features = ["derive"] }
 coord = { path = "../coord" }
 flate2 = "1.0.22"
 futures = "0.3.19"
+globset = "0.4.8"
 http = "0.2.6"
 interchange = { path = "../interchange" }
 itertools = "0.10.3"
 kafka-util = { path = "../kafka-util" }
-krb5-src = { version = "0.3.1", features = ["binaries"] }
+krb5-src = { version = "0.3.2", features = ["binaries"] }
 lazy_static = "1.4.0"
 maplit = "1.0.2"
 md-5 = "0.10.0"
 mz-avro = { path = "../avro", features = ["snappy"] }
 mz-aws-util = { path = "../aws-util", features = ["kinesis", "s3", "sqs", "sts"] }
-mz-protoc = { path = "../protoc" }
+prost-build = "0.9.1"
 ore = { path = "../ore" }
 pgrepr = { path = "../pgrepr" }
 postgres_array = { git = "https://github.com/MaterializeInc/rust-postgres-array", branch = "mz-0.7.2" }
-protobuf = { git = "https://github.com/MaterializeInc/rust-protobuf.git" }
+prost = "0.9.0"
+prost-reflect = { version = "0.5.3", features = ["serde"] }
+protobuf-src = "1.0.4"
 rand = "0.8.4"
 rdkafka = { git = "https://github.com/fede1024/rust-rdkafka.git", features = ["cmake-build", "libz-static"] }
 regex = "1.5.4"
 repr = { path = "../repr" }
-reqwest = { version = "0.11.8", features = ["native-tls-vendored"] }
-serde = "1.0.133"
-serde_json = { version = "1.0.75", features = ["raw_value"] }
+reqwest = { version = "0.11.9", features = ["native-tls-vendored"] }
+serde = "1.0.135"
+serde_json = { version = "1.0.78", features = ["raw_value"] }
 similar = "2.1.0"
 sql = { path = "../sql" }
 sql-parser = { path = "../sql-parser" }
 tempfile = "3.2.0"
 termcolor = "1.1.2"
 tiberius = { version = "0.7.1", default-features = false }
-tokio = "1.15.0"
+tokio = { version = "1.15.0", features = ["process"] }
 tokio-postgres = { git = "https://github.com/MaterializeInc/rust-postgres", branch = "mz-0.7.2", features = ["with-chrono-0_4", "with-serde_json-1"] }
 tokio-stream = "0.1.8"
 tokio-util = { version = "0.6.9", features = ['compat'] }
 url = "2.2.2"
 uuid = "0.8.2"
+walkdir = "2.3.2"
 
 [dev-dependencies]
-assert_cmd = "2.0.2"
-predicates = "2.1.0"
+assert_cmd = "2.0.4"
+predicates = "2.1.1"
