@@ -73,6 +73,8 @@ where each row of every upstream table is represented as a single row with two c
 | `oid`  | A unique identifier for the tables included in the publication. |
 | `row_data` | A text-encoded, variable length `list`. The number of text elements in a list is always equal to the number of columns in the upstream table. |
 
+This schema metadata is captured when the source is initially materialized, and is validated against the upstream schema upon restart. Tables not in this list will be ignored for view creation and their replication data will be discarded, if you wish to add a table to the publication and use it in Materialize the source must be recreated.
+
 #### Creating replication views
 
 From here, you can break down the source into views that reproduce the publication's original tables based on the `oid` identifier and convert the text elements in `row_data` to the original data types:
@@ -134,7 +136,7 @@ For PostgreSQL 13+, it is recommended that you set a reasonable value for [`max_
 
 ## Known limitations
 
-- **Schema changes:** Materialize does not support changes to schemas for existing publications. You need to drop the existing sources and then recreate them after creating new publications for the updated schemas.
+- **Schema changes:** Materialize does not support changes to schemas for existing publications. You need to drop and recreate the existing sources and then recreate them after creating new publications for the updated schemas. Materialize does attempt to detect when schema changes occur for tables which are part of the materialized source, these changes will cause the whole source to become inaccessible until is recreated. 
 - **Supported data types:** Sources can only be created from publications that use [data types](/sql/types/) supported by Materialize. Attempts to create sources from publications which contain unsupported data types will fail with an error.
 - **Truncation:** Tables replicated into Materialize should not be truncated. If a table is truncated while replicated, the whole source becomes inaccessible and will not produce any data until it is recreated.
 

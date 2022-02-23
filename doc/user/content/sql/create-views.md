@@ -29,14 +29,14 @@ _new_view_name_  | Optional. The name for the new view. If unspecified, the name
 
 ### Postgres schemas
 
-For Postgres sources, `CREATE VIEWS` will attempt to create each upstream table in the same schema as Postgres. If the publication contains tables` "public"."foo"` and `"otherschema"."foo"`, `CREATE VIEWS` is the equivalent of
+For Postgres sources, `CREATE VIEWS` will attempt to create each upstream table in the same schema as Postgres using the snapshot of publication metadata taken when the source was created. If the source contains tables` "public"."foo"` and `"otherschema"."foo"`, `CREATE VIEWS` is the equivalent of
 
 ```
 CREATE VIEW "public"."foo";
 CREATE VIEW "otherschema"."foo";
 ```
 
-Therefore, in order for `CREATE VIEWS` to succeed, all upstream schemas included in the publication must exist in Materialize as well, or you must explicitly specify the downstream schemas and rename the resulting tables.
+Therefore, in order for `CREATE VIEWS` to succeed, all upstream schemas included in the source must exist in Materialize as well, or you must explicitly specify the downstream schemas and rename the resulting tables.
 
 For example:
 
