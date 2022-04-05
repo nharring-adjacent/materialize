@@ -72,6 +72,7 @@ pub use statement::{describe, plan, plan_copy_from, StatementContext, StatementD
 /// Instructions for executing a SQL query.
 #[derive(Debug)]
 pub enum Plan {
+    CreateConnector(CreateConnectorPlan),
     CreateDatabase(CreateDatabasePlan),
     CreateSchema(CreateSchemaPlan),
     CreateRole(CreateRolePlan),
@@ -124,6 +125,13 @@ pub enum Plan {
 #[derive(Debug)]
 pub struct StartTransactionPlan {
     pub access: Option<TransactionAccessMode>,
+}
+
+#[derive(Debug)]
+pub struct CreateConnectorPlan {
+    pub name: String,
+    pub if_not_exists: bool,
+    pub connector: KafkaConnector,
 }
 
 #[derive(Debug)]
@@ -477,6 +485,11 @@ pub struct Type {
     pub create_sql: String,
     pub inner: CatalogType,
     pub depends_on: Vec<GlobalId>,
+}
+
+#[derive(Clone, Debug)]
+pub struct KafkaConnector {
+    pub create_sql: String,
 }
 
 /// Specifies when a `Peek` or `Tail` should occur.

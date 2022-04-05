@@ -455,6 +455,47 @@ impl AstDisplay for DbzMode {
 impl_display!(DbzMode);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, EnumKind)]
+#[enum_kind(KafkaConnectorType)]
+pub enum KafkaConnector<T: AstInfo> {
+    Broker {
+        broker: String,
+        with_options: Vec<SqlOption<T>>
+    },
+    CSR {
+        registry: String,
+        with_options: Vec<SqlOption<T>>,
+    }
+}
+
+impl<T: AstInfo> AstDisplay for KafkaConnector<T> {
+    fn fmt<W: fmt::Write>(&self, f: &mut AstFormatter<W>) {
+        match self {
+            KafkaConnector::Broker { broker, with_options } => {
+                f.write_str("KAFKA BROKER '");
+                f.write_node(&display::escape_single_quote_string(broker));
+                f.write_str("'");
+                if !with_options.is_empty() {
+                    f.write_str(" WITH (");
+                    f.write_node(&display::comma_separated(with_options));
+                    f.write_str(")");
+                }
+            },
+            KafkaConnector::CSR { registry, with_options } => {
+                f.write_str("CONFLUENT SCHEMA REGISTRY '");
+                f.write_node(&display::escape_single_quote_string(registry));
+                f.write_str("'");
+                if !with_options.is_empty() {
+                    f.write_str(" WITH (");
+                    f.write_node(&display::comma_separated(with_options));
+                    f.write_str(")");
+                }
+            },
+        }
+    }
+}
+impl_display_t!(KafkaConnector);
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, EnumKind)]
 #[enum_kind(ConnectorType)]
 pub enum CreateSourceConnector {
     File {

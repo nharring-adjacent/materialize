@@ -23,7 +23,7 @@ use std::fmt;
 use crate::ast::display::{self, AstDisplay, AstFormatter};
 use crate::ast::{
     AstInfo, ColumnDef, CreateSinkConnector, CreateSourceConnector, CreateSourceFormat, Envelope,
-    Expr, Format, Ident, KeyConstraint, Query, SourceIncludeMetadata, TableAlias, TableConstraint,
+    Expr, Format, Ident, KafkaConnector, KeyConstraint, Query, SourceIncludeMetadata, TableAlias, TableConstraint,
     TableWithJoins, UnresolvedDatabaseName, UnresolvedObjectName, UnresolvedSchemaName, Value,
 };
 
@@ -36,6 +36,7 @@ pub enum Statement<T: AstInfo> {
     Copy(CopyStatement<T>),
     Update(UpdateStatement<T>),
     Delete(DeleteStatement<T>),
+    CreateConnector(CreateConnectorStatement<T>),
     CreateDatabase(CreateDatabaseStatement),
     CreateSchema(CreateSchemaStatement),
     CreateSource(CreateSourceStatement<T>),
@@ -93,6 +94,7 @@ impl<T: AstInfo> AstDisplay for Statement<T> {
             Statement::Copy(stmt) => f.write_node(stmt),
             Statement::Update(stmt) => f.write_node(stmt),
             Statement::Delete(stmt) => f.write_node(stmt),
+            Statement::CreateConnector(stmt) => f.write_node(stmt),
             Statement::CreateDatabase(stmt) => f.write_node(stmt),
             Statement::CreateSchema(stmt) => f.write_node(stmt),
             Statement::CreateSource(stmt) => f.write_node(stmt),
@@ -439,6 +441,24 @@ impl<T: AstInfo> AstDisplay for CreateSourceStatement<T> {
     }
 }
 impl_display_t!(CreateSourceStatement);
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CreateConnectorStatement<T: AstInfo> {
+    pub name: UnresolvedObjectName,
+    pub if_not_exists: bool,
+    pub connector: KafkaConnector<T>,
+}
+
+impl<T: AstInfo> AstDisplay for CreateConnectorStatement<T> {
+    fn fmt<W: fmt::Write>(&self, f: &mut AstFormatter<W>) {
+        f.write_str("CREATE CONNECTOR ");
+        if self.if_not_exists {
+            f.write_str("IF NOT EXISTS ");
+        }
+        f.write_node(&self.connector);
+    }
+}
+impl_display_t!(CreateConnectorStatement);
 
 /// `CREATE SINK`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

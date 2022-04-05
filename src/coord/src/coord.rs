@@ -130,13 +130,13 @@ use mz_sql::names::{
 use mz_sql::plan::{
     AlterComputeInstancePlan, AlterIndexEnablePlan, AlterIndexResetOptionsPlan,
     AlterIndexSetOptionsPlan, AlterItemRenamePlan, ComputeInstanceIntrospectionConfig,
-    CreateComputeInstancePlan, CreateDatabasePlan, CreateIndexPlan, CreateRolePlan,
-    CreateSchemaPlan, CreateSecretPlan, CreateSinkPlan, CreateSourcePlan, CreateTablePlan,
-    CreateTypePlan, CreateViewPlan, CreateViewsPlan, DropComputeInstancesPlan, DropDatabasePlan,
-    DropItemsPlan, DropRolesPlan, DropSchemaPlan, ExecutePlan, ExplainPlan, FetchPlan,
-    HirRelationExpr, IndexOption, IndexOptionName, InsertPlan, MutationKind, OptimizerConfig,
-    Params, PeekPlan, Plan, QueryWhen, RaisePlan, ReadThenWritePlan, SendDiffsPlan,
-    SetVariablePlan, ShowVariablePlan, StatementDesc, TailFrom, TailPlan, View,
+    CreateComputeInstancePlan, CreateConnectorPlan, CreateDatabasePlan, CreateIndexPlan,
+    CreateRolePlan, CreateSchemaPlan, CreateSecretPlan, CreateSinkPlan, CreateSourcePlan,
+    CreateTablePlan, CreateTypePlan, CreateViewPlan, CreateViewsPlan, DropComputeInstancesPlan,
+    DropDatabasePlan, DropItemsPlan, DropRolesPlan, DropSchemaPlan, ExecutePlan, ExplainPlan,
+    FetchPlan, HirRelationExpr, IndexOption, IndexOptionName, InsertPlan, MutationKind,
+    OptimizerConfig, Params, PeekPlan, Plan, QueryWhen, RaisePlan, ReadThenWritePlan,
+    SendDiffsPlan, SetVariablePlan, ShowVariablePlan, StatementDesc, TailFrom, TailPlan, View,
 };
 use mz_sql_parser::ast::RawObjectName;
 use mz_transform::Optimizer;
@@ -1446,6 +1446,7 @@ impl Coordinator {
                     | Statement::AlterSecret(_)
                     | Statement::AlterCluster(_)
                     | Statement::AlterObjectRename(_)
+                    | Statement::CreateConnector(_)
                     | Statement::CreateDatabase(_)
                     | Statement::CreateIndex(_)
                     | Statement::CreateRole(_)
@@ -1663,6 +1664,9 @@ impl Coordinator {
         plan: Plan,
     ) {
         match plan {
+            Plan::CreateConnector(plan) => {
+                tx.send(self.sequence_create_connector(plan).await, session)
+            }
             Plan::CreateDatabase(plan) => {
                 tx.send(self.sequence_create_database(plan).await, session);
             }
@@ -1920,6 +1924,13 @@ impl Coordinator {
         let desc = ps.desc().clone();
         let revision = ps.catalog_revision;
         session.create_new_portal(sql, desc, plan.params, Vec::new(), revision)
+    }
+
+    async fn sequence_create_connector(
+        &mut self,
+        plan: CreateConnectorPlan,
+    ) -> Result<ExecuteResponse, CoordError> {
+        Ok(ExecuteResponse::CreatedConnector { existed: false })
     }
 
     async fn sequence_create_database(

@@ -218,6 +218,10 @@ pub enum ExecuteResponse {
     CreatedView {
         existed: bool,
     },
+    /// The requested connector was created.
+    CreatedConnector {
+        existed: bool,
+    },
     /// The requested type was created.
     CreatedType,
     /// The requested prepared statement was removed.

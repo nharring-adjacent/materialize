@@ -57,18 +57,18 @@ use crate::ast::visit::Visit;
 use crate::ast::{
     AlterClusterStatement, AlterIndexAction, AlterIndexStatement, AlterObjectRenameStatement,
     AlterSecretStatement, AstInfo, AvroSchema, ClusterOption, ColumnOption, Compression,
-    CreateClusterStatement, CreateDatabaseStatement, CreateIndexStatement, CreateRoleOption,
-    CreateRoleStatement, CreateSchemaStatement, CreateSecretStatement, CreateSinkConnector,
-    CreateSinkStatement, CreateSourceConnector, CreateSourceFormat, CreateSourceStatement,
-    CreateTableStatement, CreateTypeAs, CreateTypeStatement, CreateViewStatement,
-    CreateViewsDefinitions, CreateViewsSourceTarget, CreateViewsStatement, CsrConnectorAvro,
-    CsrConnectorProto, CsrSeedCompiled, CsrSeedCompiledOrLegacy, CsvColumns, DbzMode,
-    DropClustersStatement, DropDatabaseStatement, DropObjectsStatement, DropRolesStatement,
-    DropSchemaStatement, Envelope, Expr, Format, Ident, IfExistsBehavior, KafkaConsistency,
-    KeyConstraint, ObjectType, Op, ProtobufSchema, Query, Raw, Select, SelectItem, SetExpr,
-    SourceIncludeMetadata, SourceIncludeMetadataType, SqlOption, Statement, SubscriptPosition,
-    TableConstraint, TableFactor, TableWithJoins, UnresolvedDatabaseName, UnresolvedObjectName,
-    Value, ViewDefinition, WithOption,
+    CreateClusterStatement, CreateConnectorStatement, CreateDatabaseStatement,
+    CreateIndexStatement, CreateRoleOption, CreateRoleStatement, CreateSchemaStatement,
+    CreateSecretStatement, CreateSinkConnector, CreateSinkStatement, CreateSourceConnector,
+    CreateSourceFormat, CreateSourceStatement, CreateTableStatement, CreateTypeAs,
+    CreateTypeStatement, CreateViewStatement, CreateViewsDefinitions, CreateViewsSourceTarget,
+    CreateViewsStatement, CsrConnectorAvro, CsrConnectorProto, CsrSeedCompiled,
+    CsrSeedCompiledOrLegacy, CsvColumns, DbzMode, DropClustersStatement, DropDatabaseStatement,
+    DropObjectsStatement, DropRolesStatement, DropSchemaStatement, Envelope, Expr, Format, Ident,
+    IfExistsBehavior, KafkaConsistency, KeyConstraint, ObjectType, Op, ProtobufSchema, Query, Raw,
+    Select, SelectItem, SetExpr, SourceIncludeMetadata, SourceIncludeMetadataType, SqlOption,
+    Statement, SubscriptPosition, TableConstraint, TableFactor, TableWithJoins,
+    UnresolvedDatabaseName, UnresolvedObjectName, Value, ViewDefinition, WithOption,
 };
 use crate::catalog::{CatalogItem, CatalogItemType, CatalogType, CatalogTypeDetails};
 use crate::kafka_util;
@@ -85,13 +85,37 @@ use crate::plan::statement::{StatementContext, StatementDesc};
 use crate::plan::{
     plan_utils, query, AlterComputeInstancePlan, AlterIndexEnablePlan, AlterIndexResetOptionsPlan,
     AlterIndexSetOptionsPlan, AlterItemRenamePlan, AlterNoopPlan, ComputeInstanceConfig,
-    ComputeInstanceIntrospectionConfig, CreateComputeInstancePlan, CreateDatabasePlan,
-    CreateIndexPlan, CreateRolePlan, CreateSchemaPlan, CreateSecretPlan, CreateSinkPlan,
-    CreateSourcePlan, CreateTablePlan, CreateTypePlan, CreateViewPlan, CreateViewsPlan,
-    DropComputeInstancesPlan, DropDatabasePlan, DropItemsPlan, DropRolesPlan, DropSchemaPlan,
-    Index, IndexOption, IndexOptionName, Params, Plan, Secret, Sink, Source, Table, Type, View,
+    ComputeInstanceIntrospectionConfig, CreateComputeInstancePlan, CreateConnectorPlan,
+    CreateDatabasePlan, CreateIndexPlan, CreateRolePlan, CreateSchemaPlan, CreateSecretPlan,
+    CreateSinkPlan, CreateSourcePlan, CreateTablePlan, CreateTypePlan, CreateViewPlan,
+    CreateViewsPlan, DropComputeInstancesPlan, DropDatabasePlan, DropItemsPlan, DropRolesPlan,
+    DropSchemaPlan, Index, IndexOption, IndexOptionName, KafkaConnector, Params, Plan, Secret,
+    Sink, Source, Table, Type, View,
 };
 use crate::pure::Schema;
+
+pub fn describe_create_connector<T: AstInfo>(
+    _: &StatementContext,
+    _: &CreateConnectorStatement<T>,
+) -> Result<StatementDesc, anyhow::Error> {
+    Ok(StatementDesc::new(None))
+}
+
+pub fn plan_create_connector<T: AstInfo>(
+    _: &StatementContext,
+    CreateConnectorStatement {
+        name,
+        if_not_exists,
+        connector,
+    }: CreateConnectorStatement<T>,
+) -> Result<Plan, anyhow::Error> {
+    let create_sql = connector.to_string();
+    Ok(Plan::CreateConnector(CreateConnectorPlan {
+        name: normalize::unresolved_object_name(name)?.to_string(),
+        if_not_exists,
+        connector: KafkaConnector { create_sql },
+    }))
+}
 
 pub fn describe_create_database(
     _: &StatementContext,

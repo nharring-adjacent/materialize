@@ -1063,6 +1063,9 @@ where
                 self.complete_portal(&portal_name);
                 command_complete!("CLOSE CURSOR")
             }
+            ExecuteResponse::CreatedConnector { existed } => {
+                created!(existed, SqlState::DUPLICATE_OBJECT, "connector")
+            }
             ExecuteResponse::CreatedDatabase { existed } => {
                 created!(existed, SqlState::DUPLICATE_DATABASE, "database")
             }
