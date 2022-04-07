@@ -461,25 +461,27 @@ impl_display!(DbzMode);
 pub enum CreateConnector<T: AstInfo> {
     Kafka {
         broker: String,
-        with_options: Vec<SqlOption<T>>,
+        with_options: Vec<WithOption>,
     },
 }
 
-
-impl<T: AstInfo> AstDisplay for CreateConnector<T> {
+impl AstDisplay for CreateConnector {
     fn fmt<W: fmt::Write>(&self, f: &mut AstFormatter<W>) {
         match self {
-            Self::KafkaBroker { broker, with_options } => {
+            Self::KafkaBroker {
+                broker,
+                with_options,
+            } => {
                 f.write_str("FOR KAFKA BROKER '");
                 f.write_node(&display::escape_single_quote_string(broker));
                 f.write_str("' WITH (");
                 f.write_node(&display::comma_separated(&with_options));
                 f.write_str(")");
-            },
+            }
         }
     }
 }
-impl_display_t!(CreateConnector);
+impl_display!(CreateConnector);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum KafkaConnector {

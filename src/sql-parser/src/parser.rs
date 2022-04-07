@@ -1869,7 +1869,7 @@ impl<'a> Parser<'a> {
         let connector = if self.parse_keyword(KAFKA) {
             self.expect_keyword(BROKER)?;
             let broker = self.parse_literal_string()?;
-            let with_options = self.parse_opt_with_sql_options()?;
+            let with_options = self.parse_opt_with_options()?;
             CreateConnector::KafkaBroker {
                 broker,
                 with_options,
@@ -2594,7 +2594,8 @@ impl<'a> Parser<'a> {
         let materialized = self.parse_keyword(MATERIALIZED);
 
         let object_type = match self.parse_one_of_keywords(&[
-            DATABASE, INDEX, ROLE, CLUSTER, SECRET, SCHEMA, SINK, SOURCE, TABLE, TYPE, USER, VIEW, CONNECTOR,
+            DATABASE, INDEX, ROLE, CLUSTER, SECRET, SCHEMA, SINK, SOURCE, TABLE, TYPE, USER, VIEW,
+            CONNECTOR,
         ]) {
             Some(DATABASE) => {
                 let if_exists = self.parse_if_exists()?;

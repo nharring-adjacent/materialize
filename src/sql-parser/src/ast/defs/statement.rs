@@ -22,10 +22,10 @@ use std::fmt;
 
 use crate::ast::display::{self, AstDisplay, AstFormatter};
 use crate::ast::{
-    AstInfo, ColumnDef, CreateConnector, CreateSinkConnector, CreateSourceFormat,
-    CreateSourceConnector, Envelope, Expr, Format, Ident, KeyConstraint, Query,
-    SourceIncludeMetadata, TableAlias, TableConstraint, TableWithJoins, UnresolvedDatabaseName,
-    UnresolvedObjectName, UnresolvedSchemaName, Value,
+    AstInfo, ColumnDef, CreateConnector, CreateSinkConnector, CreateSourceConnector,
+    CreateSourceFormat, Envelope, Expr, Format, Ident, KeyConstraint, Query, SourceIncludeMetadata,
+    TableAlias, TableConstraint, TableWithJoins, UnresolvedDatabaseName, UnresolvedObjectName,
+    UnresolvedSchemaName, Value,
 };
 
 /// A top-level statement (SELECT, INSERT, CREATE, etc.)
@@ -37,7 +37,7 @@ pub enum Statement<T: AstInfo> {
     Copy(CopyStatement<T>),
     Update(UpdateStatement<T>),
     Delete(DeleteStatement<T>),
-    CreateConnector(CreateConnectorStatement<T>),
+    CreateConnector(CreateConnectorStatement),
     CreateDatabase(CreateDatabaseStatement),
     CreateSchema(CreateSchemaStatement),
     CreateSource(CreateSourceStatement<T>),
@@ -380,13 +380,13 @@ impl AstDisplay for CreateSchemaStatement {
 impl_display!(CreateSchemaStatement);
 /// `CREATE CONNECTOR`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct CreateConnectorStatement<T: AstInfo> {
+pub struct CreateConnectorStatement {
     pub name: UnresolvedObjectName,
-    pub connector: CreateConnector<T>,
+    pub connector: CreateConnector,
     pub if_not_exists: bool,
 }
 
-impl<T: AstInfo> AstDisplay for CreateConnectorStatement<T> {
+impl AstDisplay for CreateConnectorStatement {
     fn fmt<W: fmt::Write>(&self, f: &mut AstFormatter<W>) {
         f.write_str("CREATE CONNECTOR ");
         if self.if_not_exists {
@@ -399,16 +399,16 @@ impl<T: AstInfo> AstDisplay for CreateConnectorStatement<T> {
                 broker,
                 with_options,
             } => {
-                f.write_str("KAFKA BROKER ");
+                f.write_str("KAFKA BROKER '");
                 f.write_node(&display::escape_single_quote_string(&broker));
-                f.write_str(" WITH (");
+                f.write_str("' WITH (");
                 f.write_node(&display::comma_separated(&with_options));
                 f.write_str(")");
             }
         }
     }
 }
-impl_display_t!(CreateConnectorStatement);
+impl_display!(CreateConnectorStatement);
 
 /// `CREATE SOURCE`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

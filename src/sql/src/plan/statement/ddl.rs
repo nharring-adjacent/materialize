@@ -2657,14 +2657,14 @@ pub fn plan_create_secret(
 
 pub fn describe_create_connector(
     _: &StatementContext,
-    _: &CreateConnectorStatement<Raw>,
+    _: &CreateConnectorStatement,
 ) -> Result<StatementDesc, anyhow::Error> {
     Ok(StatementDesc::new(None))
 }
 
 pub fn plan_create_connector(
     scx: &StatementContext,
-    stmt: CreateConnectorStatement<Aug>,
+    stmt: CreateConnectorStatement,
 ) -> Result<Plan, anyhow::Error> {
     scx.require_experimental_mode("CREATE CONNECTOR")?;
 
@@ -2679,8 +2679,8 @@ pub fn plan_create_connector(
             broker,
             with_options,
         } => {
-            let mut with_options = normalize::options(&with_options);
-            ConnectorLiteral::Kafka(KafkaSourceConnectorLiteral {
+            let mut with_options = normalize::with_options(&with_options);
+            ConnectorLiteral::Kafka(KafkaConnectorLiteral {
                 addrs: broker.parse()?,
                 config_options: kafka_util::extract_config(&mut with_options)?,
             })

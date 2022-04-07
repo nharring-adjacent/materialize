@@ -49,9 +49,9 @@ use mz_sql::names::{
     SchemaSpecifier,
 };
 use mz_sql::plan::{
-    ComputeInstanceConfig, ComputeInstanceIntrospectionConfig, CreateIndexPlan, CreateSecretPlan,
-    CreateSinkPlan, CreateSourcePlan, CreateTablePlan, CreateTypePlan, CreateViewPlan, Params,
-    Plan, PlanContext, StatementDesc,
+    ComputeInstanceConfig, ComputeInstanceIntrospectionConfig, CreateConnectorPlan,
+    CreateIndexPlan, CreateSecretPlan, CreateSinkPlan, CreateSourcePlan, CreateTablePlan,
+    CreateTypePlan, CreateViewPlan, Params, Plan, PlanContext, StatementDesc,
 };
 use mz_sql::DEFAULT_SCHEMA;
 use mz_transform::Optimizer;
@@ -2910,6 +2910,12 @@ impl Catalog {
             Plan::CreateSecret(CreateSecretPlan { secret, .. }) => CatalogItem::Secret(Secret {
                 create_sql: secret.create_sql,
             }),
+            Plan::CreateConnector(CreateConnectorPlan { connector, .. }) => {
+                CatalogItem::Connector(Connector {
+                    create_sql: connector.create_sql,
+                    connector: connector.connector,
+                })
+            }
             _ => bail!("catalog entry generated inappropriate plan"),
         })
     }

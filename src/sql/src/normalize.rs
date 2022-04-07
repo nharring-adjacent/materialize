@@ -28,7 +28,7 @@ use mz_sql_parser::ast::{
     CreateSourceStatement, CreateTableStatement, CreateTypeAs, CreateTypeStatement,
     CreateViewStatement, Function, FunctionArgs, Ident, IfExistsBehavior, Op, Query, SqlOption,
     Statement, TableFactor, TableFunction, UnresolvedObjectName, UnresolvedSchemaName, Value,
-    ViewDefinition,
+    ViewDefinition, WithOption, WithOptionValue,
 };
 
 use crate::names::{
@@ -131,6 +131,17 @@ pub fn option_objects(options: &[SqlOption<Aug>]) -> BTreeMap<String, SqlOption<
     options
         .iter()
         .map(|o| (ident(o.name().clone()), o.clone()))
+        .collect()
+}
+
+pub fn with_options(options: &[WithOption]) -> BTreeMap<String, Value> {
+    options
+        .iter()
+        .filter_map(|o| match &o.value {
+            Some(WithOptionValue::Value(v)) => Some((o.key.to_string(), v.clone())),
+            Some(_) => None,
+            None => None,
+        })
         .collect()
 }
 
