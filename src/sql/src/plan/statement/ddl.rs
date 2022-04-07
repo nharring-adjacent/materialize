@@ -44,7 +44,7 @@ use mz_dataflow_types::sources::{
     DebeziumSourceProjection, ExternalSourceConnector, FileSourceConnector, IncludedColumnPos,
     KafkaSourceConnector, KeyEnvelope, KinesisSourceConnector, PostgresSourceConnector,
     PubNubSourceConnector, S3SourceConnector, SourceConnector, SourceEnvelope, Timeline,
-    UnplannedSourceEnvelope, UpsertStyle,
+    UnplannedSourceEnvelope, UpsertStyle, ConnectorLiteral,
 };
 use mz_expr::{CollectionPlan, GlobalId};
 use mz_interchange::avro::{self, AvroSchemaGenerator};
@@ -2680,10 +2680,10 @@ pub fn plan_create_connector(
             with_options,
         } => {
             let mut with_options = normalize::with_options(&with_options);
-            ConnectorLiteral::Kafka(KafkaConnectorLiteral {
-                addrs: broker.parse()?,
+            ConnectorLiteral::KafkaBroker {
+                broker: broker.parse()?,
                 config_options: kafka_util::extract_config(&mut with_options)?,
-            })
+            }
         }
     };
     let name = scx.allocate_qualified_name(normalize::unresolved_object_name(name)?)?;
@@ -2960,9 +2960,10 @@ pub fn plan_drop_item(
     }
     if object_type != catalog_entry.item_type() {
         bail!(
-            "{} is not of type {}",
+            "{} is type {:?}, should be {:?}",
             scx.catalog.resolve_full_name(catalog_entry.name()),
-            object_type
+            object_type,
+            catalog_entry.item_type()
         );
     }
     if !cascade {
