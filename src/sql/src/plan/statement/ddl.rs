@@ -40,11 +40,11 @@ use mz_dataflow_types::sources::encoding::{
     ProtobufEncoding, RegexEncoding, SourceDataEncoding,
 };
 use mz_dataflow_types::sources::{
-    provide_default_metadata, DebeziumDedupProjection, DebeziumEnvelope, DebeziumMode,
-    DebeziumSourceProjection, ExternalSourceConnector, FileSourceConnector, IncludedColumnPos,
-    KafkaSourceConnector, KeyEnvelope, KinesisSourceConnector, PostgresSourceConnector,
-    PubNubSourceConnector, S3SourceConnector, SourceConnector, SourceEnvelope, Timeline,
-    UnplannedSourceEnvelope, UpsertStyle, ConnectorLiteral,
+    provide_default_metadata, ConnectorLiteral, DebeziumDedupProjection, DebeziumEnvelope,
+    DebeziumMode, DebeziumSourceProjection, ExternalSourceConnector, FileSourceConnector,
+    IncludedColumnPos, KafkaSourceConnector, KeyEnvelope, KinesisSourceConnector,
+    PostgresSourceConnector, PubNubSourceConnector, S3SourceConnector, SourceConnector,
+    SourceEnvelope, Timeline, UnplannedSourceEnvelope, UpsertStyle,
 };
 use mz_expr::{CollectionPlan, GlobalId};
 use mz_interchange::avro::{self, AvroSchemaGenerator};

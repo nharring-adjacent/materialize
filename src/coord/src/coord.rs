@@ -1431,6 +1431,7 @@ impl Coordinator {
                     | Statement::ShowCreateSource(_)
                     | Statement::ShowCreateTable(_)
                     | Statement::ShowCreateView(_)
+                    | Statement::ShowCreateConnector(_)
                     | Statement::ShowDatabases(_)
                     | Statement::ShowSchemas(_)
                     | Statement::ShowIndexes(_)

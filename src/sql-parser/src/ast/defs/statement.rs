@@ -71,6 +71,7 @@ pub enum Statement<T: AstInfo> {
     ShowCreateTable(ShowCreateTableStatement<T>),
     ShowCreateSink(ShowCreateSinkStatement<T>),
     ShowCreateIndex(ShowCreateIndexStatement<T>),
+    ShowCreateConnector(ShowCreateConnectorStatement<T>),
     ShowVariable(ShowVariableStatement),
     StartTransaction(StartTransactionStatement),
     SetTransaction(SetTransactionStatement),
@@ -129,6 +130,7 @@ impl<T: AstInfo> AstDisplay for Statement<T> {
             Statement::ShowCreateTable(stmt) => f.write_node(stmt),
             Statement::ShowCreateSink(stmt) => f.write_node(stmt),
             Statement::ShowCreateIndex(stmt) => f.write_node(stmt),
+            Statement::ShowCreateConnector(stmt) => f.write_node(stmt),
             Statement::ShowVariable(stmt) => f.write_node(stmt),
             Statement::StartTransaction(stmt) => f.write_node(stmt),
             Statement::SetTransaction(stmt) => f.write_node(stmt),
@@ -1512,6 +1514,18 @@ impl<T: AstInfo> AstDisplay for ShowCreateIndexStatement<T> {
     }
 }
 impl_display_t!(ShowCreateIndexStatement);
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ShowCreateConnectorStatement<T: AstInfo> {
+    pub connector_name: T::ObjectName,
+}
+
+impl<T: AstInfo> AstDisplay for ShowCreateConnectorStatement<T> {
+    fn fmt<W: fmt::Write>(&self, f: &mut AstFormatter<W>) {
+        f.write_str("SHOW CREATE CONNECTOR ");
+        f.write_node(&self.connector_name);
+    }
+}
 
 /// `{ BEGIN [ TRANSACTION | WORK ] | START TRANSACTION } ...`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

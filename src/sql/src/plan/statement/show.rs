@@ -18,6 +18,7 @@ use anyhow::bail;
 use mz_ore::collections::CollectionExt;
 use mz_repr::{Datum, RelationDesc, Row, ScalarType};
 use mz_sql_parser::ast::display::AstDisplay;
+use mz_sql_parser::ast::ShowCreateConnectorStatement;
 
 use crate::ast::visit_mut::VisitMut;
 use crate::ast::{
@@ -192,6 +193,35 @@ pub fn plan_show_create_index(
         }))
     } else {
         bail!("'{}' is not an index", index_name.full_name_str());
+    }
+}
+
+pub fn describe_show_create_connector(
+    _: &StatementContext,
+    _: &ShowCreateConnectorStatement<Raw>,
+) -> Result<StatementDesc, anyhow::Error> {
+    Ok(StatementDesc::new(Some(
+        RelationDesc::empty()
+            .with_column("Connector", ScalarType::String.nullable(false))
+            .with_column("Create Connector", ScalarType::String.nullable(false)),
+    )))
+}
+
+pub fn plan_show_create_connector(
+    scx: &StatementContext,
+    ShowCreateConnectorStatement { connector_name }: ShowCreateConnectorStatement<Aug>,
+) -> Result<Plan, anyhow::Error> {
+    let connector = scx.get_item_by_resolved_name(&connector_name)?;
+    if let CatalogItemType::Connector = connector.item_type() {
+        let name = connector_name.full_name_str();
+        Ok(Plan::SendRows(SendRowsPlan {
+            rows: vec![Row::pack_slice(&[
+                Datum::String(&name),
+                Datum::String(connector.create_sql()),
+            ])],
+        }))
+    } else {
+        bail!("'{}' is not a connector", connector_name.full_name_str());
     }
 }
 

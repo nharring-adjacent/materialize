@@ -436,7 +436,8 @@ fn ast_rewrite_pg_catalog_char_to_text_0_9_1(
 
         // At the time the migration was written, sinks and sources
         // could not contain references to types.
-        Statement::CreateSource(_) | Statement::CreateSink(_) => {} | Statement::CreateConnector(_) => {}
+        Statement::CreateSource(_) | Statement::CreateSink(_) => {}
+        Statement::CreateConnector(_) => {}
 
         _ => bail!("catalog item contained inappropriate statement: {}", stmt),
     };
@@ -712,7 +713,8 @@ fn ast_rewrite_type_references_0_6_1(
 
         // At the time the migration was written, secrets, sinks and sources
         // could not contain references to types.
-        Statement::CreateSource(_) | Statement::CreateSink(_) | Statement::CreateSecret(_) => {} | Statement::CreateConnector(_) => {}
+        Statement::CreateSource(_) | Statement::CreateSink(_) | Statement::CreateSecret(_) => {}
+        Statement::CreateConnector(_) => {}
         _ => bail!("catalog item contained inappropriate statement: {}", stmt),
     };
 

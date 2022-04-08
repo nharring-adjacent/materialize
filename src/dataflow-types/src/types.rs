@@ -1188,7 +1188,7 @@ pub mod sources {
         KafkaBroker {
             broker: KafkaAddrs,
             config_options: BTreeMap<String, String>,
-        }
+        },
     }
 
     #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
