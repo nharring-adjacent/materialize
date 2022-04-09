@@ -28,8 +28,9 @@ use crate::catalog::builtin::{
 };
 use crate::catalog::{
     CatalogItem, CatalogState, Connector, Func, Index, Sink, SinkConnector, SinkConnectorState,
-    Source, Table, Type, SYSTEM_CONN_ID,
+    Source, Table, Type, SYSTEM_CONN_ID, View,
 };
+
 
 /// An update to a built-in table.
 #[derive(Debug)]
