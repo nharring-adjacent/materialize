@@ -2675,12 +2675,12 @@ pub fn plan_create_connector(
         if_not_exists,
     } = stmt;
     let connector_literal = match connector {
-        CreateConnector::KafkaBroker {
+        CreateConnector::Kafka {
             broker,
             with_options,
         } => {
             let mut with_options = normalize::with_options(&with_options);
-            ConnectorLiteral::KafkaBroker {
+            ConnectorLiteral::Kafka {
                 broker: broker.parse()?,
                 config_options: kafka_util::extract_config(&mut with_options)?,
             }

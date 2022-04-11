@@ -458,7 +458,7 @@ impl_display!(DbzMode);
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, EnumKind)]
 #[enum_kind(ConnectorType)]
-pub enum CreateConnector<T: AstInfo> {
+pub enum CreateConnector {
     Kafka {
         broker: String,
         with_options: Vec<WithOption>,
@@ -468,7 +468,7 @@ pub enum CreateConnector<T: AstInfo> {
 impl AstDisplay for CreateConnector {
     fn fmt<W: fmt::Write>(&self, f: &mut AstFormatter<W>) {
         match self {
-            Self::KafkaBroker {
+            Self::Kafka {
                 broker,
                 with_options,
             } => {

@@ -237,7 +237,7 @@ impl CatalogState {
                 Datum::Int64(schema_id.into()),
                 Datum::String(name),
                 Datum::String(match connector.connector {
-                    ConnectorLiteral::KafkaBroker { .. } => "kafka broker",
+                    ConnectorLiteral::Kafka { .. } => "kafka broker",
                 }),
             ]),
             diff,

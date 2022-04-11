@@ -1185,7 +1185,7 @@ pub mod sources {
 
     #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
     pub enum ConnectorLiteral {
-        KafkaBroker {
+        Kafka {
             broker: KafkaAddrs,
             config_options: BTreeMap<String, String>,
         },

@@ -380,6 +380,7 @@ impl AstDisplay for CreateSchemaStatement {
     }
 }
 impl_display!(CreateSchemaStatement);
+
 /// `CREATE CONNECTOR`
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct CreateConnectorStatement {
@@ -397,7 +398,7 @@ impl AstDisplay for CreateConnectorStatement {
         f.write_node(&self.name);
         f.write_str(" FOR ");
         match &self.connector {
-            CreateConnector::KafkaBroker {
+            CreateConnector::Kafka {
                 broker,
                 with_options,
             } => {

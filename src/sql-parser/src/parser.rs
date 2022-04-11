@@ -1870,7 +1870,7 @@ impl<'a> Parser<'a> {
             self.expect_keyword(BROKER)?;
             let broker = self.parse_literal_string()?;
             let with_options = self.parse_opt_with_options()?;
-            CreateConnector::KafkaBroker {
+            CreateConnector::Kafka {
                 broker,
                 with_options,
             }
