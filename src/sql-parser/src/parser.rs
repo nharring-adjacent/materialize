@@ -3999,7 +3999,7 @@ impl<'a> Parser<'a> {
         let extended = self.parse_keyword(EXTENDED);
         if extended {
             self.expect_one_of_keywords(&[
-                COLUMNS, FULL, INDEX, INDEXES, KEYS, OBJECTS, SCHEMAS, TABLES, TYPES,
+                COLUMNS, CONNECTORS, FULL, INDEX, INDEXES, KEYS, OBJECTS, SCHEMAS, TABLES, TYPES,
             ])?;
             self.prev_token();
         }
@@ -4011,6 +4011,7 @@ impl<'a> Parser<'a> {
             } else {
                 self.expect_one_of_keywords(&[
                     COLUMNS,
+                    CONNECTORS,
                     MATERIALIZED,
                     OBJECTS,
                     ROLES,
@@ -4047,6 +4048,7 @@ impl<'a> Parser<'a> {
             }))
         } else if let Some(object_type) = self.parse_one_of_keywords(&[
             OBJECTS, ROLES, CLUSTERS, SINKS, SOURCES, TABLES, TYPES, USERS, VIEWS, SECRETS,
+            CONNECTORS,
         ]) {
             let object_type = match object_type {
                 OBJECTS => ObjectType::Object,
@@ -4058,6 +4060,7 @@ impl<'a> Parser<'a> {
                 TYPES => ObjectType::Type,
                 VIEWS => ObjectType::View,
                 SECRETS => ObjectType::Secret,
+                CONNECTORS => ObjectType::Connector,
                 _ => unreachable!(),
             };
 
@@ -4147,6 +4150,12 @@ impl<'a> Parser<'a> {
             Ok(Statement::ShowCreateIndex(ShowCreateIndexStatement {
                 index_name: self.parse_raw_name()?,
             }))
+        } else if self.parse_keywords(&[CREATE, CONNECTOR]) {
+            Ok(Statement::ShowCreateConnector(
+                ShowCreateConnectorStatement {
+                    connector_name: self.parse_raw_name()?,
+                },
+            ))
         } else {
             let variable = if self.parse_keywords(&[TRANSACTION, ISOLATION, LEVEL]) {
                 Ident::new("transaction_isolation")

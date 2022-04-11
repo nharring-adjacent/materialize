@@ -18,4 +18,11 @@ name  connector_type
 ------------------------------
 testconn   "kafka broker"
 
+> SHOW CREATE CONNECTOR testconn
+Connector   "Create Connector"
+---------------------------------
+materialize.public.testconn   "CREATE CONNECTOR testconn FOR KAFKA BROKER 'kafka:1234' WITH (security_protocol = 'SASL_SSL', sasl_mechanisms = 'PLAIN')"
+
+
 > DROP CONNECTOR testconn
+
