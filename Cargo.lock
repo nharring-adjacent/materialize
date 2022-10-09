@@ -1056,9 +1056,9 @@ dependencies = [
 
 [[package]]
 name = "const_format"
-version = "0.2.23"
+version = "0.2.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0936ffe6d0c8d6a51b3b0a73b2acbe925d786f346cf45bfddc8341d79fb7dc8a"
+checksum = "79f926bc2341a80e6bb5a16e18057c8c90ca3edbdeb9fa497bd0f82b1f4df4e6"
 dependencies = [
  "const_format_proc_macros",
 ]
